@@ -42,25 +42,26 @@
   document.querySelectorAll('video[data-video]').forEach(video => {
     const placeholder = video.parentElement.querySelector('.video-placeholder');
 
-    video.addEventListener('loadeddata', () => {
-      console.log('Video loaded:', video.currentSrc);
-      if (placeholder) placeholder.classList.add('hidden');
-    });
+    ```javascript
+// Video loading and diagnostics
+document.querySelectorAll('video[data-video]').forEach(video => {
+  const placeholder = video.parentElement.querySelector('.video-placeholder');
 
-    video.addEventListener('error', () => {
-      console.error(
-        'Video failed:',
-        video.currentSrc || video.querySelector('source')?.src,
-        'Error code:',
-        video.error?.code,
-        'Message:',
-        video.error?.message
-      );
+  const hidePlaceholder = () => {
+    if (placeholder) placeholder.classList.add('hidden');
+  };
 
-      // Keep the video element visible so its controls remain available.
-      // Keep the placeholder visible too, to help identify the failed video.
-      if (placeholder) placeholder.classList.remove('hidden');
-    });
+  video.addEventListener('loadeddata', hidePlaceholder);
+  video.addEventListener('canplay', hidePlaceholder);
+
+  video.addEventListener('error', () => {
+    console.error('Video failed to load:', video.currentSrc, video.error);
+    if (placeholder) placeholder.classList.remove('hidden');
   });
-})();
+
+  // Handle videos that loaded before the listeners were attached.
+  if (video.readyState >= 2) {
+    hidePlaceholder();
+  }
+});
 ```
