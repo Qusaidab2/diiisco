@@ -1,21 +1,27 @@
-script_js = r'''(() => {
+(() => {
   const root = document.documentElement;
 
-  // Theme toggle
+  // Light and dark theme
   const saved = localStorage.getItem('hannah-theme');
+
   root.dataset.theme =
     saved ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    (window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light');
 
   const updateThemeIcon = () => {
     document.querySelectorAll('[data-theme-toggle]').forEach(button => {
-      button.textContent = root.dataset.theme === 'dark' ? '☼' : '☾';
+      button.textContent =
+        root.dataset.theme === 'dark' ? '☼' : '☾';
     });
   };
 
   document.querySelectorAll('[data-theme-toggle]').forEach(button => {
     button.addEventListener('click', () => {
-      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme =
+        root.dataset.theme === 'dark' ? 'light' : 'dark';
+
       localStorage.setItem('hannah-theme', root.dataset.theme);
       updateThemeIcon();
     });
@@ -23,15 +29,19 @@ script_js = r'''(() => {
 
   updateThemeIcon();
 
-  // Mobile menu
+  // Mobile navigation
   const menuButton = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.navlinks');
 
   if (menuButton && nav) {
     menuButton.addEventListener('click', () => {
       const open = nav.classList.toggle('open');
+
       menuButton.setAttribute('aria-expanded', String(open));
-      menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      menuButton.setAttribute(
+        'aria-label',
+        open ? 'Close menu' : 'Open menu'
+      );
     });
 
     nav.querySelectorAll('a').forEach(link => {
@@ -43,26 +53,38 @@ script_js = r'''(() => {
     });
   }
 
-  // Video loading and diagnostics
+  // Video loading and placeholder handling
   document.querySelectorAll('video[data-video]').forEach(video => {
-    const placeholder = video.parentElement.querySelector('.video-placeholder');
+    const placeholder =
+      video.parentElement.querySelector('.video-placeholder');
 
     const hidePlaceholder = () => {
-      if (placeholder) placeholder.classList.add('hidden');
+      if (placeholder) {
+        placeholder.classList.add('hidden');
+      }
     };
 
     const showPlaceholder = () => {
-      if (placeholder) placeholder.classList.remove('hidden');
+      if (placeholder) {
+        placeholder.classList.remove('hidden');
+      }
     };
 
     video.addEventListener('loadeddata', hidePlaceholder);
     video.addEventListener('canplay', hidePlaceholder);
+
     video.addEventListener('error', () => {
-      console.error('Video failed to load:', video.currentSrc || video.src, video.error);
+      console.error(
+        'Video failed to load:',
+        video.currentSrc || video.src,
+        video.error
+      );
+
       showPlaceholder();
     });
 
-    if (video.readyState >= 2) hidePlaceholder();
+    if (video.readyState >= 2) {
+      hidePlaceholder();
+    }
   });
 })();
-'''
